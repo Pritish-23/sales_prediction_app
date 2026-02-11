@@ -14,14 +14,17 @@ from utils.preprocess import (
 # PAGE CONFIG
 # =========================
 st.set_page_config(
-    page_title="Product Sales Prediction",
-    layout="centered"
+    page_title="Product Sales Executive Dashboard",
+    layout="wide"
 )
 
-st.title("📊 Product Sales Prediction System")
+# =========================
+# HEADER
+# =========================
+st.title("📊 Product Sales Prediction using Reviews")
 st.caption(
-    "A decision-support system that analyzes customer reviews to estimate "
-    "sales performance and provide actionable insights."
+    "AI-powered decision-support system that analyzes customer reviews "
+    "to estimate sales performance and provide actionable business insights."
 )
 
 st.divider()
@@ -48,8 +51,6 @@ classifier, regressor, clf_features, reg_features, score_min, score_max = load_m
 # =========================
 # FILE UPLOAD
 # =========================
-st.header("📁 Upload Product Review File")
-
 uploaded_file = st.file_uploader(
     "Upload a CSV file containing reviews of a single product",
     type=["csv"]
@@ -59,32 +60,28 @@ if "df_time" not in st.session_state:
     st.session_state.df_time = None
 
 # =========================
-# MAIN LOGIC
+# MAIN FLOW
 # =========================
 if uploaded_file is not None:
     try:
         df = pd.read_csv(uploaded_file)
-
-        # Normalize column names ONCE
         df.columns = df.columns.str.strip()
-
-        # Preserve raw dataframe for time-based analysis
         df_raw = df.copy()
 
         st.success("File uploaded successfully.")
+
+        # =========================
+        # PREVIEW
+        # =========================
         with st.expander("🔍 Preview Uploaded Data"):
             st.dataframe(df.head())
 
-        # =========================
-        # ANALYSIS CONTROLS
-        # =========================
         st.divider()
-        st.markdown("### ⚙️ Analysis Controls")
 
-        st.write(
-            "Use the controls below to customize how much review-level evidence "
-            "you want to view in the analysis."
-        )
+        # =========================
+        # CONTROLS
+        # =========================
+        st.subheader("⚙️ Analysis Control Panel")
 
         num_reviews = st.selectbox(
             "Number of representative review highlights to display",
@@ -92,32 +89,31 @@ if uploaded_file is not None:
             index=0
         )
 
-        st.caption(
-            "The maximum is limited to three reviews to balance interpretability "
-            "and visual clarity."
-        )
-
-        # =========================
-        # TIME RANGE SELECTION (BEFORE PREDICT)
-        # =========================
         time_window = st.selectbox(
             "📅 Select time range for review activity",
             [
-            "Last 7 days",
-            "Last 30 days",
-            "Last 12 months",
-            "Last 2 years",
-            "Last 5 years",
-            "Last 10 years"
-            ],index=1,key="time_window"
-            )
+                "Last 7 days",
+                "Last 30 days",
+                "Last 12 months",
+                "Last 2 years",
+                "Last 5 years",
+                "Last 10 years"
+            ],
+            index=1,
+            key="time_window"
+        )
 
+        predict_button = st.button("🚀 Predict Sales Performance")
+
+        st.divider()
 
         # =========================
         # PREDICTION
         # =========================
-        if st.button("🚀 Predict Sales Performance"):
+        if predict_button:
+
             with st.spinner("Analyzing reviews and generating predictions..."):
+
                 features_df = extract_features(df)
                 summary = extract_summary_stats(df)
 
@@ -130,21 +126,16 @@ if uploaded_file is not None:
                 X_clf = features_df[clf_features]
                 X_reg = features_df[reg_features]
 
-                # =========================
-                # BUILD TIME DATA 
-                # =========================
+                # TIME DATA
                 if "Time" in df_raw.columns:
                     df_time = df_raw.copy()
                     df_time["review_date"] = pd.to_datetime(
                         df_time["Time"], unit="s", errors="coerce"
                     )
                     df_time = df_time.dropna(subset=["review_date"])
-
-                    # ✅ STORE IN SESSION STATE
                     st.session_state.df_time = df_time
                 else:
                     st.session_state.df_time = None
-
 
                 sales_class = classifier.predict(X_clf)[0]
                 sales_score = regressor.predict(X_reg)[0]
@@ -165,44 +156,48 @@ if uploaded_file is not None:
                     confidence_level = "Low"
 
             # =========================
-            # RESULTS DISPLAY
+            # SUMMARY
             # =========================
-            st.divider()
-            st.subheader("📈 Prediction Results")
+            st.subheader("📈 Reviews Summary")
 
-            st.markdown("### 🧾 Product Overview")
-            col1, col2 = st.columns(2)
+            col1, col2, col3, col4 = st.columns(4)
             col1.metric("Total Reviews", summary["total_reviews"])
             col2.metric("Average Rating", summary["avg_rating"])
-
-            st.markdown("### 😊 Customer Sentiment Breakdown")
-            col1, col2, col3 = st.columns(3)
-            col1.metric("Positive (%)", summary["positive_pct"])
-            col2.metric("Neutral (%)", summary["neutral_pct"])
-            col3.metric("Negative (%)", summary["negative_pct"])
+            col3.metric("Positive (%)", summary["positive_pct"])
+            col4.metric("Negative (%)", summary["negative_pct"])
 
             st.divider()
 
-            if sales_class == 1:
-                st.success("🟢 Predicted Sales Category: **High Sales Product**")
-            else:
-                st.warning("🔴 Predicted Sales Category: **Low Sales Product**")
+            # =========================
+            # SALES PERFORMANCE
+            # =========================
+            st.subheader("📊 Sales Performance Evaluation")
 
-            st.metric("Sales Strength Index (0–1)", round(normalized_score, 3))
-            st.metric("Prediction Confidence", confidence_level)
+            colA, colB, colC = st.columns(3)
+
+            if sales_class == 1:
+                colA.success("🟢 Predicted Sales Category: HIGH Sales Product")
+            else:
+                colA.warning("🔴 Predicted Sales Category: LOW Sales Product")
+
+            colB.metric("Sales Strength Index (0–1)", round(normalized_score, 3))
+            colC.metric("Prediction Confidence", confidence_level)
+
+            st.progress(normalized_score)
 
             st.info(
                 "Sales Strength Index is a normalized indicator of relative sales performance, "
                 "not a probability or future sales forecast.\n\n"
                 "Prediction Confidence indicates how reliable the result is based on the amount "
-                "and consistency of review data, not the likelihood of future sales."
+                "and consistency of review data."
             )
 
-            # =========================
-            # REVIEW ACTIVITY OVER TIME
-            # =========================
             st.divider()
-            st.markdown("### 📊 Review Activity Over Time")
+
+            # =========================
+            # REVIEW ACTIVITY
+            # =========================
+            st.subheader("📊 Review Activity Over Time")
 
             df_time = st.session_state.df_time
 
@@ -242,14 +237,13 @@ if uploaded_file is not None:
                     ).size()
                     counts.index = counts.index.to_timestamp()
 
-                else:  # Last 10 years
+                else:
                     cutoff = pd.Timestamp.now() - pd.DateOffset(years=10)
                     plot_df = df_time[df_time["review_date"] >= cutoff]
                     counts = plot_df.groupby(
                         plot_df["review_date"].dt.to_period("Y")
                     ).size()
                     counts.index = counts.index.to_timestamp()
-
 
                 counts = counts.sort_index()
 
@@ -261,12 +255,12 @@ if uploaded_file is not None:
             else:
                 st.info("Run prediction to view review activity over time.")
 
+            st.divider()
 
             # =========================
             # BUSINESS INTERPRETATION
             # =========================
-            st.divider()
-            st.markdown("### 🧠 Business Interpretation")
+            st.subheader("🧠 Business Interpretation")
 
             interpretation_points = []
 
@@ -325,11 +319,12 @@ if uploaded_file is not None:
             for point in interpretation_points:
                 st.write("• " + point)
 
-            # =========================
-            # KEY THEMES DETECTED
-            # =========================
             st.divider()
-            st.markdown("### 📌 Key Themes Detected")
+
+            # =========================
+            # KEY THEMES
+            # =========================
+            st.subheader("📌 Key Themes Detected")
 
             theme_keywords = [
                 "delivery", "delay", "shipping", "courier", "arrival",
@@ -362,11 +357,12 @@ if uploaded_file is not None:
                     "No strong delivery, quality, packaging, or service-related themes were detected."
                 )
 
+            st.divider()
+
             # =========================
             # REVIEW HIGHLIGHTS
             # =========================
-            st.divider()
-            st.markdown("### 🗣️ Review Highlights")
+            st.subheader("🗣️ Review Highlights")
 
             with st.expander("👍 Top Positive Reviews"):
                 for i, review in enumerate(positive_reviews, start=1):
@@ -376,11 +372,12 @@ if uploaded_file is not None:
                 for i, review in enumerate(negative_reviews, start=1):
                     st.error(f"{i}. {review}")
 
+            st.divider()
+
             # =========================
             # ACTIONABLE INSIGHTS
             # =========================
-            st.divider()
-            st.markdown("### 📌 Actionable Insights from Reviews")
+            st.subheader("📌 Actionable Insights from Reviews")
 
             actions = []
 
@@ -431,8 +428,5 @@ if uploaded_file is not None:
         st.error("❌ Error processing the file.")
         st.write(str(e))
 
-# =========================
-# FOOTER
-# =========================
 st.divider()
 st.caption("Machine Learning Project | Sales Prediction using Review Analytics")
