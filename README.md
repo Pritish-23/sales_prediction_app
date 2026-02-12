@@ -67,15 +67,19 @@ project-root/
 
 Installation and Setup
 1. Clone the Repository
+   ```
    git clone https://github.com/your-username/your-repository-name.git
    cd your-repository-name
-
+   ```
 2. Install Dependencies
+   ```
    pip install -r requirements.txt
-
+   ```
 3. Run the Application Locally
+   ```
    streamlit run app.py
-
+   ```
+   
 Deployment
 The application is deployed using Streamlit Community Cloud.
 
