@@ -1,133 +1,192 @@
-\# 📊 Product Sales Prediction System
+Product Sales Prediction using Review Analytics
 
+An AI-powered decision-support system that analyzes customer reviews to estimate product sales performance and generate actionable business insights.
 
+Project Overview
 
-A machine learning–powered Streamlit application that analyzes customer reviews to predict a product’s sales performance and provide actionable business insights.
+This project presents a Machine Learning-based framework for predicting the sales performance of a product using customer review data. Instead of relying solely on historical sales figures, the system leverages review sentiment, rating distribution, textual patterns, and engagement metrics to infer sales strength.
 
+The application is implemented using Streamlit and deployed as an interactive web dashboard.
 
+Objectives
 
----
+Predict whether a product belongs to a High Sales or Low Sales category.
 
+Compute a normalized Sales Strength Index (0–1).
 
+Analyze customer sentiment distribution.
 
-\## 🚀 Project Overview
+Identify key business-relevant themes from textual reviews.
 
+Generate actionable business insights.
 
+Visualize review activity trends over time.
 
-This project leverages \*\*Natural Language Processing (NLP)\*\* and \*\*machine learning models\*\* to analyze product reviews and estimate sales strength.
+Machine Learning Approach
 
+The system uses two supervised learning models:
 
+1. Classification Model
 
-It helps answer questions like:
+Predicts whether a product belongs to a High Sales or Low Sales category.
 
-\- Is this product likely to be a \*\*high-sales\*\* or \*\*low-sales\*\* product?
+2. Regression Model
 
-\- How strong is its \*\*sales performance relative to others\*\*?
+Predicts a normalized Sales Strength Index ranging between 0 and 1.
 
-\- What do customers \*\*like or dislike\*\* the most?
+Feature Engineering Includes:
 
-\- How has review activity changed over time?
+Average rating
 
+Review count
 
+Sentiment proportions
 
-The system is built as an \*\*interactive dashboard\*\* using Streamlit.
+Text-based token features
 
+Bigram patterns
 
+Temporal engagement features
 
----
+Application Features
 
+The Streamlit dashboard provides:
 
+CSV upload for a single product review dataset
 
-\## 🧠 Key Features
+Data preview section
 
+Customizable analysis controls
 
+Executive summary dashboard
 
-\- 📂 Upload CSV file containing reviews of a single product
+Sales performance evaluation
 
-\- 😊 Sentiment analysis using VADER
+Review activity trend visualization
 
-\- 📈 Review activity trends over time
+Business interpretation section
 
-\- 🟢 / 🔴 Sales category prediction (High vs Low)
+Key theme detection
 
-\- 🔢 Sales Strength Index (normalized score)
+Review highlights (positive and negative)
 
-\- 🧠 Business interpretation \& actionable insights
+Automated actionable insights
 
-\- 🗣️ Highlighted positive and negative reviews
-
-\- 📌 Key themes detection from customer feedback
-
-
-
----
-
-
-
-\## 🛠️ Tech Stack
-
-
-
-\- \*\*Language:\*\* Python  
-
-\- \*\*Frontend:\*\* Streamlit  
-
-\- \*\*Data Processing:\*\* Pandas, NumPy  
-
-\- \*\*NLP:\*\* NLTK (VADER Sentiment Analyzer)  
-
-\- \*\*Machine Learning:\*\* Scikit-learn, XGBoost  
-
-\- \*\*Model Persistence:\*\* Joblib  
-
-
-
----
-
-
-
-\## 📂 Project Structure
-
-
-sales\_prediction\_app/
-
+Project Structure
+project-root/
 │
-
 ├── app.py
-
 ├── requirements.txt
-
-├── README.md
-
-│
-
-├── utils/
-
-│ └── preprocess.py
-
-│
-
 ├── models/
-
-│ ├── sales\_classifier.pkl
-
-│ ├── feature\_order.pkl
-
-│ ├── sales\_regressor.pkl
-
-│ ├── reg\_feature\_order.pkl
-
-│ ├── sales\_score\_p05.pkl
-
-│ └── sales\_score\_p95.pkl
-
+│   ├── sales_classifier.pkl
+│   ├── sales_regressor.pkl
+│   ├── feature_order.pkl
+│   ├── reg_feature_order.pkl
+│   ├── sales_score_p05.pkl
+│   └── sales_score_p95.pkl
 │
-
-├── data/
-
-│ └── sample\_product\_reviews.csv
-
+├── utils/
+│   ├── preprocess.py
+│   └── __init__.py
 │
+└── README.md
+Installation and Setup
+1. Clone the Repository
+git clone https://github.com/your-username/your-repository-name.git
+cd your-repository-name
+2. Install Dependencies
+pip install -r requirements.txt
+3. Run the Application Locally
+streamlit run app.py
+Deployment
 
-└── .gitignore
+The application is deployed using Streamlit Community Cloud.
 
+To deploy:
+
+Push the code to GitHub.
+
+Log in to Streamlit Cloud.
+
+Select the repository.
+
+Choose app.py as the main file.
+
+Deploy the application.
+
+Input Dataset Requirements
+
+The CSV file must contain:
+
+Review text column
+
+Rating column
+
+Time column (in UNIX timestamp format)
+
+Each dataset should represent reviews of a single product.
+
+Sales Strength Index
+
+The Sales Strength Index:
+
+Is a normalized indicator between 0 and 1
+
+Reflects relative sales performance
+
+Is not a future sales forecast
+
+Is not a probability score
+
+Business Value
+
+This system assists:
+
+E-commerce managers
+
+Product strategists
+
+Marketing teams
+
+Business analysts
+
+It enables them to:
+
+Detect early sales signals
+
+Understand customer sentiment
+
+Identify operational issues
+
+Optimize product positioning
+
+Technologies Used
+
+Python
+
+Streamlit
+
+Pandas
+
+Scikit-learn
+
+XGBoost
+
+Joblib
+
+NumPy
+
+Academic Context
+
+This project was developed as part of an academic Machine Learning and Data Analytics initiative focusing on real-world business intelligence applications using Natural Language Processing and predictive modeling.
+
+Author
+
+Your Name
+Bachelor of Engineering / Computer Science
+LinkedIn: [Your LinkedIn Profile]
+GitHub: [Your GitHub Profile]
+
+Disclaimer
+
+This model predicts relative sales performance based on review-derived features. It does not guarantee actual sales outcomes and should be used as a decision-support tool.
