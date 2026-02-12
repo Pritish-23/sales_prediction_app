@@ -45,6 +45,7 @@ The Streamlit dashboard provides:
 -Automated actionable insights
 
 Project Structure
+```
 project-root/
 │
 ├── app.py
@@ -62,6 +63,7 @@ project-root/
 │   └── __init__.py
 │
 └── README.md
+```
 
 Installation and Setup
 1. Clone the Repository
