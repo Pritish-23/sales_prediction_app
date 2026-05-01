@@ -1,4 +1,4 @@
-##Product Sales Prediction using Review Analytics
+##Product Sales Prediction using Review Analytics.
 
 An AI-powered decision-support system that analyzes customer reviews to estimate product sales performance and generate actionable business insights.
 
